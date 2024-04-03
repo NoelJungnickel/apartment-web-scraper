@@ -7,3 +7,4 @@ class ApartmentscraperItem(scrapy.Item):
     size = scrapy.Field()
     price = scrapy.Field()
     status = scrapy.Field()
+    floor = scrapy.Field()

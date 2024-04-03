@@ -21,7 +21,7 @@ class ApartmentscraperPipeline:
 
     def process_item(self, item, spider):
 
-        if len(item["apartment"]) < 2:
+        """if len(item["apartment"]) < 2:
             return
         
         item["apartment"] = item["apartment"][1:]
@@ -30,6 +30,9 @@ class ApartmentscraperPipeline:
         item["apartment"][4] = item["apartment"][4].replace(" ", "").replace("€", " €").replace(",", ".")
 
 
-        self.items.append(item)
+        self.items.append(item)"""
+
+        item["size"][0] = item["size"][0].replace(",", ".")
+        item["price"][0] = item["price"][4].replace(" ", "").replace("€", " €").replace(",", ".")
 
         return item
