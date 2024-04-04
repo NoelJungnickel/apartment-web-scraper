@@ -16,23 +16,14 @@ class ApartmentscraperPipeline:
     ]
 
     def close_spider(self, spider):
-        df = pandas.DataFrame(list(item["apartment"] for item in self.items), columns = self.slots, index=list(range(1, len(self.items) + 1)))
+        df = pandas.DataFrame(self.items)
+        df.set_index('location', inplace=True)
         df.to_excel("apartments.xlsx")
 
     def process_item(self, item, spider):
+        item["size"] = item["size"].replace(",", ".")
+        item["price"] = item["price"].replace(" ", "").replace("€", " €").replace(",", ".")
 
-        """if len(item["apartment"]) < 2:
-            return
-        
-        item["apartment"] = item["apartment"][1:]
-
-        item["apartment"][3] = item["apartment"][3].replace(",", ".")
-        item["apartment"][4] = item["apartment"][4].replace(" ", "").replace("€", " €").replace(",", ".")
-
-
-        self.items.append(item)"""
-
-        item["size"][0] = item["size"][0].replace(",", ".")
-        item["price"][0] = item["price"][4].replace(" ", "").replace("€", " €").replace(",", ".")
+        self.items.append(item)
 
         return item

@@ -12,16 +12,16 @@ class MarleneunddietrichSpider(scrapy.Spider):
         for apartment in apartments:
             yield {
                 "location": [],
-                "number": apartment.css("div.bvr-ui-sidebar__list-item__header h2 span::text").extract(),
-                "rooms": apartment.css("div.bvr-ui-sidebar__list-item__meta ul li[3] <-mika fragen span::text").extract(),
-                "size": apartment.css("div.bvr-ui-sidebar__list-item__meta ul li[1] <-mika fragen span::text").extract(),
-                "price": apartment.css("div.bvr-ui-sidebar__list-item__header div.bvr-ui-sidebar__list-item__badge span.bvr-ui-sidebar__list-item__badge-label::text").extract(),
-                "status": apartment.css("div.bvr-ui-sidebar__list-item__header div.bvr-ui-sidebar__list-item__badge bvr-ui-sidebar__list-item__badge-circle::style").extract(),
-                "floor": apartment.css("div.bvr-ui-sidebar__list-item__meta ul li[2] <-mika fragen span::text").extract(),
+                "number": apartment.css(".bvr-ui-sidebar__list-item__header h2 span::text").extract(),
+                "rooms": apartment.css(".bvr-ui-sidebar__list-item__meta ul li[3] <-mika fragen span::text").extract(),
+                "size": apartment.css(".bvr-ui-sidebar__list-item__meta ul li[1] <-mika fragen span::text").extract(),
+                "price": apartment.css(".bvr-ui-sidebar__list-item__header .bvr-ui-sidebar__list-item__badge .bvr-ui-sidebar__list-item__badge-label::text").extract(),
+                "status": apartment.css(".bvr-ui-sidebar__list-item__header .bvr-ui-sidebar__list-item__badge .bvr-ui-sidebar__list-item__badge-circle::style").extract(),
+                "floor": apartment.css(".bvr-ui-sidebar__list-item__meta ul li[2] <-mika fragen span::text").extract(),
             }
 
 
         #for apartment in response.css("div.bvr-ui-sidebar__list-item"):
         #    yield {
-        #        "apartment": apartment.css("div.bvr-ui-sidebar__list-item::text").extract(),
+        #        "apartment": apartment.css(".bvr-ui-sidebar__list-item::text").extract(),
         #    }
