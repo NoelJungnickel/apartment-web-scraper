@@ -15,7 +15,7 @@ class Ba94Spider(scrapy.Spider):
         for i in range(len(apartments_list)):
             apartments_list[i] = apartments_list[i][1:]
         
-        apartments_list_temp = apartments_list.copy()
+        apartments_list_temp = apartments_list
         for i in range(len(apartments_list)):
             if len(apartments_list[i]) < 2:
                 apartments_list_temp.remove(apartments_list[i])

@@ -8,8 +8,9 @@ class MarleneunddietrichSpider(scrapy.Spider):
 
     def parse(self, response):
         apartments = response.css("div.bvr-ui-sidebar__list-item")
+        yield {response.xpath(r"/html/body/div[1]/div[1]/div/div[2]/div[1]/div[2]/div[1]/div[3]/ul/li[1]/span/text()").get()}
 
-        for apartment in apartments:
+        """for apartment in apartments:
             yield {
                 "location": [],
                 "number": apartment.css(".bvr-ui-sidebar__list-item__header h2 span::text").extract(),
@@ -18,7 +19,7 @@ class MarleneunddietrichSpider(scrapy.Spider):
                 "price": apartment.css(".bvr-ui-sidebar__list-item__header .bvr-ui-sidebar__list-item__badge .bvr-ui-sidebar__list-item__badge-label::text").extract(),
                 "status": apartment.css(".bvr-ui-sidebar__list-item__header .bvr-ui-sidebar__list-item__badge .bvr-ui-sidebar__list-item__badge-circle::style").extract(),
                 "floor": apartment.css(".bvr-ui-sidebar__list-item__meta ul li[2] <-mika fragen span::text").extract(),
-            }
+            }"""
 
 
         #for apartment in response.css("div.bvr-ui-sidebar__list-item"):
