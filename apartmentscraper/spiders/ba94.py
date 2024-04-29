@@ -1,6 +1,5 @@
 import scrapy
 
-
 class Ba94Spider(scrapy.Spider):
     name = "ba94"
     allowed_domains = ["ba94.de"]
