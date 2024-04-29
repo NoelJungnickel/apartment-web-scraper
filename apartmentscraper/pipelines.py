@@ -15,7 +15,7 @@ class ApartmentscraperPipeline:
         "Status",
     ]
 
-    """def close_spider(self, spider):
+    def close_spider(self, spider):
         df = pandas.DataFrame(self.items)
         df.set_index('location', inplace=True)
         df.to_excel("apartments.xlsx")
@@ -26,4 +26,4 @@ class ApartmentscraperPipeline:
 
         self.items.append(item)
 
-        return item"""
+        return item

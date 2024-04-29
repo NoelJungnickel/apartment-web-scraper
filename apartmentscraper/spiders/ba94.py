@@ -15,7 +15,7 @@ class Ba94Spider(scrapy.Spider):
         for i in range(len(apartments_list)):
             apartments_list[i] = apartments_list[i][1:]
         
-        apartments_list_temp = apartments_list
+        apartments_list_temp = apartments_list.copy()
         for i in range(len(apartments_list)):
             if len(apartments_list[i]) < 2:
                 apartments_list_temp.remove(apartments_list[i])
@@ -23,6 +23,7 @@ class Ba94Spider(scrapy.Spider):
 
         for i in range(len(apartments_list)):
             yield {
+                "provider": "ba94",
                 "location": apartments_list[i][0],
                 "number": apartments_list[i][1],
                 "rooms": apartments_list[i][2],

@@ -2,15 +2,15 @@ import scrapy
 import chompjs
 import re
 
-class AmwinterfeldtSpider(scrapy.Spider):
-    name = "amwinterfeldt"
-    allowed_domains = ["amwinterfeldt.com"]
-    start_urls = ["https://amwinterfeldt.com/grundrisse/"]
+class FranzSpider(scrapy.Spider):
+    name = "franz"
+    allowed_domains = ["the-franz.com"]
+    start_urls = ["https://the-franz.com/de/grundrisse/"]
 
     def parse(self, response):
         apartments_list = []
 
-        for i in range(7, 14):
+        for i in range(13, 19):
             string = "".join([s.strip() for s in response.css("script::text")[i].get().splitlines()])
             start = string.split("};", 1)[0].find("settings")
             end = string.find("};")
@@ -34,7 +34,7 @@ class AmwinterfeldtSpider(scrapy.Spider):
                         status = "sold/reserved"
 
                     yield {
-                        "provider": "amwinterfeldt",
+                        "provider": "franz",
                         "location": location,
                         "number": number,
                         "rooms": rooms,
