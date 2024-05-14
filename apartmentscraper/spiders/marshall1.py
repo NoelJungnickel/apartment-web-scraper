@@ -24,14 +24,16 @@ class Marshall1Spider(scrapy.Spider):
                 and not clean_text.endswith("OG")
             ):
                 apartments_list_clean.append(clean_text)
+        apartments_list_clean = list(set(apartments_list_clean))
+        apartments_list_clean.sort()
 
         data = {
             "action": "revslider_ajax_call_front",
             "client_action": "get_slider_html",
             "usage": "modal",
         }
+
         for idx in apartments_list_clean:
-            print("THIS LINE ------------------------->", idx)
             response = requests.post(
                 self.url,
                 params=self.params,
@@ -39,8 +41,16 @@ class Marshall1Spider(scrapy.Spider):
             )
 
             clean_text = (
-                response.text.replace("\\t", "").replace("\\n", "").replace("\\", "")
+                response.text.replace("\\t", "")
+                .replace("\\n", "")
+                .replace("\t", "")
+                .replace("\n", "")
+                .replace("\\", "")
             )
+
+            price = self.get_price(clean_text)
+            if self.get_status(clean_text) == "notavailable":
+                price = "0"
 
             yield {
                 "provider": "marshall1",
@@ -48,10 +58,9 @@ class Marshall1Spider(scrapy.Spider):
                 "number": idx,
                 "rooms": self.get_rooms(clean_text),
                 "size": self.get_size(clean_text),
-                "price": self.get_price(clean_text),
+                "price": price,
                 "status": self.get_status(clean_text),
                 "floor": self.get_floor(clean_text),
-                # "text": clean_text
             }
 
     def get_location(self, text: str) -> str:
@@ -88,9 +97,7 @@ class Marshall1Spider(scrapy.Spider):
                 break
         return size[::-1]
 
-    def get_price(
-        self, text: str
-    ) -> str:  # TODO CHECK IF APARTMENT IS AVAILABLE -> IF NOT RETURN NOTHING FOR PRICE
+    def get_price(self, text: str) -> str:
         price = ""
         index = text.find("EUR")  # TODO checken ob es mehr als 1 "EUR" gibt
         while text[index] != ">":
@@ -119,9 +126,9 @@ class Marshall1Spider(scrapy.Spider):
             "Room"
         )  # TODO checken ob es mehr als 1 "Room" gibt
         while True:
-            if text[index].isalpha():
-                floor += text[index]
+            floor += text[index]
             index += 1
             if text[index] == "<" or index <= 0:
                 break
-        return floor
+        floor = floor.strip().split(" ")
+        return floor[1]  # TODO checken ob "floor[1]" existiert
