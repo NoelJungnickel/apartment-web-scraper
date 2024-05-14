@@ -1,3 +1,16 @@
-test = {
-    "test": '<p>H1 - 1.6.19<br>Status: <span class="sc-state available"></span> <span class="sc-state-text available">verfügbar</span><br>184,49 m² <br>3 Zimmer / 6 Etage</p><p>&nbsp;</p><p class="info">Bitte klicken für mehr Infos</p>'
-}
+import bs4 as bs4
+import chompjs
+
+with open("../4kurfuerst.html", "r") as f:
+    soup = bs4.BeautifulSoup(f, "html.parser")
+    response = soup.find_all("script")
+    Apartments = []
+    for i in range(20, 21):
+        string = "".join([s.strip() for s in response[i].text.splitlines()])
+        start = string.split("};", 1)[0].find("settings")
+        end = string.find("};")
+        string = string[start + len("settings") : end] + "}"
+        string = string.split("=", 1)[1].strip()
+        Apartments.append(chompjs.parse_js_object(string))
+    # print(chompjs.parse_js_object(string))
+    # print(Apartments)

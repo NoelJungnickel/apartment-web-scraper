@@ -3,16 +3,16 @@ import chompjs
 import requests
 
 
-class AmwinterfeldtSpider(scrapy.Spider):
-    name = "amwinterfeldt"
-    allowed_domains = ["amwinterfeldt.com"]
-    start_urls = ["https://amwinterfeldt.com/grundrisse/"]
-    request_url = "https://amwinterfeldt.com/wp-content/plugins/dh-slider-revolution-iframes//single_rev_slider.php?alias=h"
+class KurfuerstSpider(scrapy.Spider):
+    name = "kurfuerst"
+    allowed_domains = ["kurfuerst.diamona-harnisch.com"]
+    start_urls = ["https://kurfuerst.diamona-harnisch.com/grundrisse/"]
+    request_url = " https://kurfuerst.diamona-harnisch.com/wp-content/plugins/dh-slider-revolution-iframes//single_rev_slider.php?alias="
 
     def parse(self, response):
         apartments_list = []
 
-        for i in range(7, 14):
+        for i in range(13, 14):
             string = "".join(
                 [s.strip() for s in response.css("script::text")[i].get().splitlines()]
             )
@@ -22,46 +22,37 @@ class AmwinterfeldtSpider(scrapy.Spider):
             string = string.split("=", 1)[1].strip()
             apartments_list.append(chompjs.parse_js_object(string))
 
-        yield {"test": apartments_list}
+        yield {
+            "test": apartments_list[0]["layers_list"]["spots"]["containers"][
+                "elements"
+            ]["points"].get("text")
+        }
 
-        for i in range(len(apartments_list)):
-            for j in range(len(apartments_list[i]["spots"])):
-                if (
-                    apartments_list[i]["spots"][j]["tooltip_content"][
-                        "squares_settings"
-                    ]["containers"][0]["settings"]["elements"][0]["options"].get("text")
-                    != None
-                ):
-                    apartment = (
-                        apartments_list[i]["spots"][j]["tooltip_content"][
-                            "squares_settings"
-                        ]["containers"][0]["settings"]["elements"][0]["options"]
-                        .get("text")
-                        .get("text")
-                    )
+        """for i in range(len(apartments_list)):
+            for j in range(len(apartments_list[i]["layers_list"])):
+                apartment = apartments_list[i]["layers_list"][j]["spots"]["containers"][
+                    "elements"
+                ]["points"].get("text")
 
-                    number = self.get_reqid(apartment)
-                    id_parts = number.replace("*", "").split(".")
+                number = self.get_reqid(apartment)
+                id_parts = number.replace("*", "").split(".")
 
-                    if 'class="sc-state available"' not in apartment:
-                        continue
+                if 'class="sc-state available"' not in apartment:
+                    continue
 
-                    if number == "2.0.02":
-                        url = self.request_url[0 : len(self.request_url) - 1] + "2-0-02"
-                    else:
-                        url = self.request_url + id_parts[0] + "-" + id_parts[-1]
-                    response = requests.get(url)
+                url = self.request_url + id_parts[0] + "-" + id_parts[-1]
+                response = requests.get(url)
 
-                    yield {
-                        "provider": "amwinterfeldt",
-                        "location": self.get_location(apartment),
-                        "number": number,
-                        "rooms": self.get_rooms(apartment),
-                        "size": self.get_size(apartment),
-                        "price": self.get_price(response.text),
-                        "status": "free",
-                        "floor": self.get_floor(apartment),
-                    }
+                yield {
+                    "provider": "amwinterfeldt",
+                    "location": self.get_location(apartment),
+                    "number": number,
+                    "rooms": self.get_rooms(apartment),
+                    "size": self.get_size(apartment),
+                    "price": self.get_price(response.text),
+                    "status": "free",
+                    "floor": self.get_floor(apartment),
+                }"""
 
     def get_reqid(self, text: str) -> str:
         reqid = ""
