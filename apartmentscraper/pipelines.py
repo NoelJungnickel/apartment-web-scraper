@@ -6,7 +6,7 @@ class ApartmentscraperPipeline:
 
     items = []
 
-    """def close_spider(self, spider):
+    def close_spider(self, spider):
         df = pandas.DataFrame(self.items)
         df.set_index("provider", inplace=True)
         df.to_excel("apartments.xlsx")
@@ -25,7 +25,9 @@ class ApartmentscraperPipeline:
         item["status"] = (
             item["status"].replace("notavailable", "sold").replace("available", "free")
         )
+        if item["floor"] == "p":
+            item["floor"] = "EG"
 
         self.items.append(item)
 
-        return item"""
+        return item

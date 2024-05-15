@@ -12,7 +12,7 @@ class KurfuerstSpider(scrapy.Spider):
     def parse(self, response):
         apartments_list = []
 
-        for i in range(13, 14):
+        for i in range(13, 15):
             string = "".join(
                 [s.strip() for s in response.css("script::text")[i].get().splitlines()]
             )
@@ -22,37 +22,57 @@ class KurfuerstSpider(scrapy.Spider):
             string = string.split("=", 1)[1].strip()
             apartments_list.append(chompjs.parse_js_object(string))
 
-        yield {
-            "test": apartments_list[0]["layers_list"]["spots"]["containers"][
-                "elements"
-            ]["points"].get("text")
-        }
+        for i in range(len(apartments_list)):
+            for j in range(len(apartments_list[i]["spots"])):
+                if (
+                    apartments_list[i]["spots"][j]["tooltip_content"][
+                        "squares_settings"
+                    ]["containers"][0]["settings"]["elements"][0]["options"].get("text")
+                    != None
+                ):
+                    apartment = (
+                        apartments_list[i]["spots"][j]["tooltip_content"][
+                            "squares_settings"
+                        ]["containers"][0]["settings"]["elements"][0]["options"]
+                        .get("text")
+                        .get("text")
+                    )
 
-        """for i in range(len(apartments_list)):
-            for j in range(len(apartments_list[i]["layers_list"])):
-                apartment = apartments_list[i]["layers_list"][j]["spots"]["containers"][
-                    "elements"
-                ]["points"].get("text")
+                    if "sc-state" not in apartment:
+                        continue
 
-                number = self.get_reqid(apartment)
-                id_parts = number.replace("*", "").split(".")
+                    number = self.get_reqid(apartment)
+                    id_parts = number.replace("*", "").split(".")
 
-                if 'class="sc-state available"' not in apartment:
-                    continue
+                    url = (
+                        self.request_url
+                        + id_parts[0]
+                        + "-"
+                        + id_parts[1]
+                        + id_parts[-1]
+                    )
+                    response = requests.get(url)
 
-                url = self.request_url + id_parts[0] + "-" + id_parts[-1]
-                response = requests.get(url)
+                    if 'class="sc-state available"' in apartment:
+                        status = "free"
+                        price = self.get_price(response.text)
+                    elif 'class="sc-state reserved"' in apartment:
+                        status = "reserved"
+                        price = self.get_price(response.text)
+                    else:
+                        status = "sold"
+                        price = "0"
 
-                yield {
-                    "provider": "amwinterfeldt",
-                    "location": self.get_location(apartment),
-                    "number": number,
-                    "rooms": self.get_rooms(apartment),
-                    "size": self.get_size(apartment),
-                    "price": self.get_price(response.text),
-                    "status": "free",
-                    "floor": self.get_floor(apartment),
-                }"""
+                    yield {
+                        "provider": "amwinterfeldt",
+                        "location": "Haus " + id_parts[0],
+                        "number": number,
+                        "rooms": self.get_rooms(apartment),
+                        "size": self.get_size(apartment),
+                        "price": price,
+                        "status": status,
+                        "floor": self.get_floor(apartment),
+                    }
 
     def get_reqid(self, text: str) -> str:
         reqid = ""
@@ -65,29 +85,19 @@ class KurfuerstSpider(scrapy.Spider):
         reqid = reqid[::-1].strip().split("<")
         return reqid[0]  # TODO chekcne ob "reqid[0]" existiert
 
-    def get_location(self, text: str) -> str:
-        location = ""
-        index = text.find("<p>") + 2  # TODO checken ob es mehr als 1 "<p>" gibt
-        while text[index] != "-":
-            index += 1
-            if text[index] == "-":
-                break
-            location += text[index]
-        return location
-
     def get_rooms(self, text: str) -> str:
         rooms = ""
-        index = text.find("m²") + 7  # TODO checken ob es mehr als 1 "m²" gibt
-        while True:
-            rooms += text[index]
-            index += 1
-            if text[index].isalpha() or index <= 0:
+        index = text.find("Zimmer")  # TODO checken ob es mehr als 1 "Zimmer" gibt
+        while text[index] != ">":
+            index -= 1
+            if text[index] == ">":
                 break
-        return rooms
+            rooms += text[index]
+        return rooms[::-1]
 
     def get_size(self, text: str) -> str:
         size = ""
-        index = text.find("m²")  # TODO checken ob es mehr als 1 "m²" gibt
+        index = text.find("qm")  # TODO checken ob es mehr als 1 "qm" gibt
         while True:
             if text[index].isdigit() or text[index] == "," or text[index] == ".":
                 size += text[index]

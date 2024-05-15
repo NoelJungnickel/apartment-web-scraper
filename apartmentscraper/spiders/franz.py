@@ -38,14 +38,24 @@ class FranzSpider(scrapy.Spider):
                         .get("text")
                     )
 
+                    if "sc-state" not in apartment:
+                        continue
+
                     number = self.get_reqid(apartment)
                     id_parts = number.replace("*", "").split(".")
 
-                    if 'class="sc-state available"' not in apartment:
-                        continue
-
                     url = self.request_url + id_parts[0] + "-" + id_parts[-1]
                     response = requests.get(url)
+
+                    if 'class="sc-state available"' in apartment:
+                        status = "free"
+                        price = self.get_price(response.text)
+                    elif 'class="sc-state reserved"' in apartment:
+                        status = "reserved"
+                        price = self.get_price(response.text)
+                    else:
+                        status = "sold"
+                        price = "0"
 
                     yield {
                         "provider": "franz",
@@ -53,8 +63,8 @@ class FranzSpider(scrapy.Spider):
                         "number": number,
                         "rooms": self.get_rooms(apartment),
                         "size": self.get_size(apartment),
-                        "price": self.get_price(response.text),
-                        "status": "free",
+                        "price": price,
+                        "status": status,
                         "floor": self.get_floor(apartment),
                     }
 
