@@ -22,8 +22,6 @@ class AmwinterfeldtSpider(scrapy.Spider):
             string = string.split("=", 1)[1].strip()
             apartments_list.append(chompjs.parse_js_object(string))
 
-        yield {"test": apartments_list}
-
         for i in range(len(apartments_list)):
             for j in range(len(apartments_list[i]["spots"])):
                 if (
@@ -40,11 +38,11 @@ class AmwinterfeldtSpider(scrapy.Spider):
                         .get("text")
                     )
 
-                    number = self.get_reqid(apartment)
-                    id_parts = number.replace("*", "").split(".")
-
                     if 'class="sc-state available"' not in apartment:
                         continue
+
+                    number = self.get_reqid(apartment)
+                    id_parts = number.replace("*", "").split(".")
 
                     if number == "2.0.02":
                         url = self.request_url[0 : len(self.request_url) - 1] + "2-0-02"

@@ -64,7 +64,7 @@ class KurfuerstSpider(scrapy.Spider):
                         price = "0"
 
                     yield {
-                        "provider": "amwinterfeldt",
+                        "provider": "kurfuerst",
                         "location": "Haus " + id_parts[0],
                         "number": number,
                         "rooms": self.get_rooms(apartment),

@@ -8,8 +8,8 @@ class ApartmentscraperPipeline:
 
     def close_spider(self, spider):
         df = pandas.DataFrame(self.items)
-        df.set_index("provider", inplace=True)
-        df.to_excel("apartments.xlsx")
+        with pandas.ExcelWriter("apartments.xlsx") as writer:
+            df.to_excel(writer, sheet_name="Apartments", index=False)
 
     def process_item(self, item, spider):
         item["location"] = item["location"].strip()
