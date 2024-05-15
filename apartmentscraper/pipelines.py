@@ -25,7 +25,7 @@ class ApartmentscraperPipeline:
         item["status"] = (
             item["status"].replace("notavailable", "sold").replace("available", "free")
         )
-        if item["floor"] == "p":
+        if item["floor"] == "p" or item["floor"] == "GF":
             item["floor"] = "EG"
 
         self.items.append(item)
